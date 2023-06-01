@@ -50,11 +50,14 @@ void setup(void) {
   btnL.attachClick(handleClick);
 }
 
+unsigned long timer = 0;
+
 void loop() {
   btnL.tick();
 
-  if ((millis() % 1000) == 0)
+  if (timer+1000 < millis())
   {
+    timer = millis();
     float batVol = battery_read();
     float batPercent = battery_percent(batVol);
       
