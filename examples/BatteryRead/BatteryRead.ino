@@ -53,7 +53,7 @@ void setup(void) {
 void loop() {
   btnL.tick();
 
-  if (millis() % 1000)
+  if ((millis() % 1000) == 0)
   {
     float batVol = battery_read();
     float batPercent = battery_percent(batVol);
@@ -69,5 +69,5 @@ void loop() {
     tft.print(batVol);
     tft.println(" V");
   }
-  delay(100);
+  delay(10);
 }
