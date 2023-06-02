@@ -15,7 +15,7 @@ OneButton btnL = OneButton(0, true, true);
 float battery_read()
 {
   adc_power_on();
-  float voltage = analogRead(4) * 3.3f / 4095.0f * 2.02;
+  float voltage = analogRead(4) * 2.0f * 3.3f / 4096.0f;
   adc_power_off();
   return voltage;
 }
@@ -46,6 +46,9 @@ void setup(void) {
   tft.setRotation(2);
   powerSafe();
 
+  pinMode(4, ANALOG);
+  analogReadResolution(12);
+  
   pinMode(10, OUTPUT);
   btnL.attachClick(handleClick);
 }
