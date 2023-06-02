@@ -9,13 +9,17 @@
 #include <SPI.h>
 TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
 
+#define PIN_BAT_VOLT                    4
+#define PIN_LCD_BL                      10
+#define PIN_BTN_L                       0
+#define PIN_BTN_R                       47
 
-OneButton btnL = OneButton(0, true, true);
+OneButton btnL = OneButton(PIN_BTN_L, true, true);
 
 float battery_read()
 {
   adc_power_on();
-  float voltage = analogRead(4) * 2.0f * 3.3f / 4096.0f;
+  float voltage = analogRead(PIN_BAT_VOLT) * 2.0f * 3.3f / 4096.0f;
   adc_power_off();
   return voltage;
 }
@@ -38,7 +42,7 @@ bool lastState = LOW;
 
 static void handleClick() {
     lastState = !lastState;
-    digitalWrite(10, lastState);
+    digitalWrite(PIN_LCD_BL, lastState);
 }
 
 void setup(void) {
@@ -46,10 +50,10 @@ void setup(void) {
   tft.setRotation(2);
   powerSafe();
 
-  pinMode(4, ANALOG);
+  pinMode(PIN_BAT_VOLT, ANALOG);
   analogReadResolution(12);
   
-  pinMode(10, OUTPUT);
+  pinMode(PIN_LCD_BL, OUTPUT);
   btnL.attachClick(handleClick);
 }
 
@@ -62,6 +66,16 @@ void loop() {
   {
     timer = millis();
     float batVol = battery_read();
+
+    if (batVol < 3.3f)
+    {
+      powerSafe();
+      pinMode(PIN_LCD_BL, OUTPUT);
+      digitalWrite(PIN_LCD_BL, HIGH);
+      esp_deep_sleep_start();
+      return;
+    }
+    
     float batPercent = battery_percent(batVol);
       
     tft.fillScreen(TFT_BLACK);
